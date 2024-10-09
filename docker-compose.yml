@@ -1,4 +1,3 @@
-
 version: '3.9'
 services:
   db:
@@ -25,19 +24,23 @@ services:
       ##start_period: 10s
 
   hotelAPI:
-    image: cphmk/hotel_api:latest
+    image: cphmk/hotel_api/:latest
     container_name: hotelAPI
     ports:
       - "7070:7070"
     environment:
       - DEPLOYED=true
-      - CONNECTION_STR=${CONNECTION_STR}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      - CONNECTION_STR=jdbc:postgresql://db:5432/
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=hotel
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - backend
+      - frontend
 
   watchtower:
     image: containrrr/watchtower
@@ -51,9 +54,30 @@ services:
       - WATCHTOWER_INCLUDE_STOPPED=true  # Optional: include stopped containers if needed
     command: hotelAPI
 
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - frontend
+
 networks:
   backend:
     name: backend
     internal: false # in production, it should be true if you don't want to expose this network to the outside world
     driver: bridge
+  frontend:
+    name: frontend
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
 
