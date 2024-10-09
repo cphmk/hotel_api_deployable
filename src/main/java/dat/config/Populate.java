@@ -50,8 +50,10 @@ public class Populate {
         Room r114 = new Room(114, new BigDecimal(2520), Room.RoomType.DOUBLE);
         Room r115 = new Room(115, new BigDecimal(3200), Room.RoomType.DOUBLE);
         Room r116 = new Room(116, new BigDecimal(4500), Room.RoomType.SUITE);
+        Room r117 = new Room(117, new BigDecimal(5500), Room.RoomType.SUITE);
 
-        Room[] roomArray = {r111, r112, r113, r114, r115, r116};
+
+        Room[] roomArray = {r111, r112, r113, r114, r115, r116, r117};
         return Set.of(roomArray);
     }
 }
